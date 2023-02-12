@@ -1,0 +1,41 @@
+# fly.toml file generated for holy-grass-8371 on 2021-04-06T14:31:33-04:00
+
+app = "vardy-os"
+
+kill_signal = "SIGINT"
+kill_timeout = 5
+
+[experimental]
+# required because we can't infer your binary's name
+cmd = "./vardy_os"
+
+[env]
+PORT = "8080"
+ENV = "prod"
+
+[[services]]
+internal_port = 8080
+protocol = "tcp"
+
+[services.concurrency]
+hard_limit = 25
+soft_limit = 20
+
+[[services.ports]]
+handlers = ["http"]
+port = "80"
+
+[[services.ports]]
+handlers = ["tls", "http"]
+port = "443"
+
+[[services.http_checks]]
+interval = 10000
+grace_period = "5s"
+method = "get"
+path = "/health_check"
+protocol = "http"
+restart_limit = 0
+timeout = 2000
+tls_skip_verify = false
+[services.http_checks.headers]
