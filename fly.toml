@@ -1,41 +1,41 @@
-# fly.toml file generated for holy-grass-8371 on 2021-04-06T14:31:33-04:00
+# fly.toml app configuration file generated for vardy-os on 2023-05-27T16:43:02-07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
 app = "vardy-os"
-
+primary_region = "sea"
 kill_signal = "SIGINT"
-kill_timeout = 5
+kill_timeout = "5s"
 
 [experimental]
-# required because we can't infer your binary's name
-cmd = "./vardy_os"
+  cmd = ["./vardy_os"]
 
 [env]
-PORT = "8080"
-ENV = "prod"
+  ENV = "prod"
+  PORT = "8080"
 
 [[services]]
-internal_port = 8080
-protocol = "tcp"
+  protocol = "tcp"
+  internal_port = 8080
 
-[services.concurrency]
-hard_limit = 25
-soft_limit = 20
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
 
-[[services.ports]]
-handlers = ["http"]
-port = "80"
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
 
-[[services.ports]]
-handlers = ["tls", "http"]
-port = "443"
-
-[[services.http_checks]]
-interval = 10000
-grace_period = "5s"
-method = "get"
-path = "/health_check"
-protocol = "http"
-restart_limit = 0
-timeout = 2000
-tls_skip_verify = false
-[services.http_checks.headers]
+  [[services.http_checks]]
+    interval = "10s"
+    timeout = "2s"
+    grace_period = "5s"
+    restart_limit = 0
+    method = "get"
+    path = "/health_check"
+    protocol = "http"
